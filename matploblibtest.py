@@ -85,5 +85,3 @@ sns.boxplot(x=df["total_bill"])
 
 df["total_bill"].hist()
 plt.show()
-
-plt

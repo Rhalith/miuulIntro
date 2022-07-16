@@ -500,3 +500,100 @@ sex
 female   0.111111  
 male     0.064516  
 """
+
+pd.set_option("display.width", 500)
+df = sns.load_dataset("titanic")
+df.head()
+
+df["age2"] = df["age"] * 2
+df["age3"] = df["age"] * 5
+
+(df["age"]/10).head()
+"""
+0    2.2
+1    3.8
+2    2.6
+3    3.5
+4    3.5
+Name: age, dtype: float64
+"""
+(df["age2"]/10).head()
+"""
+0    4.4
+1    7.6
+2    5.2
+3    7.0
+4    7.0
+Name: age2, dtype: float64
+"""
+(df["age3"]/10).head()
+"""
+0    11.0
+1    19.0
+2    13.0
+3    17.5
+4    17.5
+Name: age3, dtype: float64
+"""
+
+for col in df.columns:
+    if "age" in col:
+        print(col)
+"""
+age
+age2
+age3
+"""
+
+for col in df.columns:
+    if "age" in col:
+        df[col] = df[col]/10
+
+df.head()
+
+df[["age", "age2", "age3"]].apply(lambda x: x/10).head()
+df.loc[:, df.columns.str.contains("age")].apply(lambda  x:x/10).head()
+"""
+    age  age2  age3
+0  0.22  0.44  1.10
+1  0.38  0.76  1.90
+2  0.26  0.52  1.30
+3  0.35  0.70  1.75
+4  0.35  0.70  1.75
+"""
+
+df.loc[:, df.columns.str.contains("age")].apply(lambda x: (x-x.mean()) / x.std()).head()
+"""
+        age      age2      age3
+0 -0.530005 -0.530005 -0.530005
+1  0.571430  0.571430  0.571430
+2 -0.254646 -0.254646 -0.254646
+3  0.364911  0.364911  0.364911
+4  0.364911  0.364911  0.364911
+"""
+
+def StandartScaler(col_name):
+    return (col_name - col_name.mean()) / col_name.std()
+
+df.loc[:, df.columns.str.contains("age")].apply(StandartScaler).head()
+"""
+        age      age2      age3
+0 -0.530005 -0.530005 -0.530005
+1  0.571430  0.571430  0.571430
+2 -0.254646 -0.254646 -0.254646
+3  0.364911  0.364911  0.364911
+4  0.364911  0.364911  0.364911
+"""
+
+df.loc[:, df.columns.str.contains("age")] = df.loc[:, df.columns.str.contains("age")].apply(StandartScaler)
+
+df.head()
+"""
+   survived  pclass     sex       age  sibsp  parch     fare embarked  class    who  adult_male deck  embark_town alive  alone      age2      age3
+0         0       3    male -1.346261      1      0   7.2500        S  Third    man        True  NaN  Southampton    no  False -1.346261 -1.346261
+1         1       1  female  0.995063      1      0  71.2833        C  First  woman       False    C    Cherbourg   yes  False  0.995063  0.995063
+2         1       3  female -0.760930      0      0   7.9250        S  Third  woman       False  NaN  Southampton   yes   True -0.760930 -0.760930
+3         1       1  female  0.556064      1      0  53.1000        S  First  woman       False    C  Southampton   yes  False  0.556064  0.556064
+4         0       3    male  0.556064      0      0   8.0500        S  Third    man        True  NaN  Southampton    no   True  0.556064  0.556064
+"""
+

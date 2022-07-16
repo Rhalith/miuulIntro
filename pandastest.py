@@ -597,3 +597,76 @@ df.head()
 4         0       3    male  0.556064      0      0   8.0500        S  Third    man        True  NaN  Southampton    no   True  0.556064  0.556064
 """
 
+import numpy as np
+m = np.random.randint(1,30, size=(5,3))
+
+df1 = pd.DataFrame(m, columns=["var1", "var2", "var3"])
+df2 = df1 + 99
+
+pd.concat([df1, df2])
+"""
+   var1  var2  var3
+0    27    12    23
+1    12    17    12
+2    10    27     6
+3    15     5    20
+4    21    10    10
+0   126   111   122
+1   111   116   111
+2   109   126   105
+3   114   104   119
+4   120   109   109
+"""
+
+pd.concat([df1, df2], ignore_index=True)
+"""
+   var1  var2  var3
+0    27    12    23
+1    12    17    12
+2    10    27     6
+3    15     5    20
+4    21    10    10
+5   126   111   122
+6   111   116   111
+7   109   126   105
+8   114   104   119
+9   120   109   109
+"""
+
+df1 = pd.DataFrame({"employees": ["john", "dennis", "mark", "maria"],
+                    "group": ["accounting", "engineering", "engineering", "hr"]})
+
+df2 = pd.DataFrame({"employees": ["mark", "john", "dennis", "maria"],
+                    "start_date": [2010, 2009, 2014, 2019]})
+
+pd.merge(df1, df2)
+"""
+  employees        group  start_date
+0      john   accounting        2009
+1    dennis  engineering        2014
+2      mark  engineering        2010
+3     maria           hr        2019
+"""
+
+pd.merge(df1, df2, on="employees")
+"""
+  employees        group  start_date
+0      john   accounting        2009
+1    dennis  engineering        2014
+2      mark  engineering        2010
+3     maria           hr        2019
+"""
+
+df3 = pd.merge(df1, df2)
+
+df4 = pd.DataFrame({"group": ["accounting", "engineering", "hr"],
+                    "manager": ["Caner", "Mustafa", "Berkcan"]})
+
+pd.merge(df3, df4)
+"""
+  employees        group  start_date  manager
+0      john   accounting        2009    Caner
+1    dennis  engineering        2014  Mustafa
+2      mark  engineering        2010  Mustafa
+3     maria           hr        2019  Berkcan
+"""

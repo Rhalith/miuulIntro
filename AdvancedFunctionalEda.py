@@ -214,3 +214,101 @@ total_bill  244.0  19.785943  8.902412  3.07  3.07  9.5575  17.795  38.0610  48.
 tip         244.0   2.998279  1.383638  1.00  1.00  1.4400   2.900   5.1955   7.2145  10.00  10.00
 size        244.0   2.569672  0.951100  1.00  1.00  2.0000   2.000   4.0000   6.0000   6.00   6.00
 """
+
+df["embarked"].value_counts()
+"""
+S    644
+C    168
+Q     77
+Name: embarked, dtype: int64
+"""
+df["sex"].unique()
+"""
+array(['male', 'female'], dtype=object)
+"""
+df["class"].nunique()
+"""
+3
+"""
+
+cat_cols = [col for col in df.columns if str(df[col].dtypes) in ["category", "object", "bool"]]
+cat_cols
+"""
+['sex',
+ 'embarked',
+ 'class',
+ 'who',
+ 'adult_male',
+ 'deck',
+ 'embark_town',
+ 'alive',
+ 'alone']
+"""
+
+num_but_cat = [col for col in df.columns if df[col].nunique() < 10 and df[col].dtypes in ["int", "float"]]
+
+cat_but_car = [col for col in df.columns if df[col].nunique() > 20 and str(df[col].dtypes) in ["category", "object"]]
+
+cat_cols = cat_cols + num_but_cat
+"""
+['sex',
+ 'embarked',
+ 'class',
+ 'who',
+ 'adult_male',
+ 'deck',
+ 'embark_town',
+ 'alive',
+ 'alone']
+"""
+
+def CatSummary(dataFrame, colName):
+    print(pd.DataFrame({colName: dataFrame[colName].value_counts(),
+                        "Ratio": 100*dataFrame[colName].value_counts() / len(dataFrame)}))
+CatSummary(df, "survived")
+"""
+   survived      Ratio
+0       549  61.616162
+1       342  38.383838
+"""
+
+for col in cat_cols:
+    CatSummary(df, col)
+"""
+        sex      Ratio
+male    577  64.758698
+female  314  35.241302
+   embarked      Ratio
+S       644  72.278339
+C       168  18.855219
+Q        77   8.641975
+        class      Ratio
+Third     491  55.106622
+First     216  24.242424
+Second    184  20.650954
+       who      Ratio
+man    537  60.269360
+woman  271  30.415264
+child   83   9.315376
+       adult_male     Ratio
+True          537  60.26936
+False         354  39.73064
+   deck     Ratio
+C    59  6.621773
+B    47  5.274972
+D    33  3.703704
+E    32  3.591470
+A    15  1.683502
+F    13  1.459035
+G     4  0.448934
+             embark_town      Ratio
+Southampton          644  72.278339
+Cherbourg            168  18.855219
+Queenstown            77   8.641975
+     alive      Ratio
+no     549  61.616162
+yes    342  38.383838
+       alone     Ratio
+True     537  60.26936
+False    354  39.73064
+"""

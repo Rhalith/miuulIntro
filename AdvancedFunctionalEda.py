@@ -312,3 +312,69 @@ yes    342  38.383838
 True     537  60.26936
 False    354  39.73064
 """
+
+def CatSummary(dataFrame, colName, plot = False):
+    print(pd.DataFrame({colName: dataFrame[colName].value_counts(),
+                        "Ratio": 100*dataFrame[colName].value_counts() / len(dataFrame)}))
+    print("##############################")
+
+    if plot:
+        sns.countplot(x=dataFrame[colName], data=dataFrame)
+        plt.show(block = True)
+
+CatSummary(df, "sex", True)
+
+for col in cat_cols:
+    if df[col].dtypes != "bool":
+        CatSummary(df, col, True)
+    else:
+        df[col] = df[col].astype(int)
+        CatSummary(df, col, True)
+"""
+        sex      Ratio
+male    577  64.758698
+female  314  35.241302
+##############################
+   embarked      Ratio
+S       644  72.278339
+C       168  18.855219
+Q        77   8.641975
+##############################
+        class      Ratio
+Third     491  55.106622
+First     216  24.242424
+Second    184  20.650954
+##############################
+       who      Ratio
+man    537  60.269360
+woman  271  30.415264
+child   83   9.315376
+##############################
+   adult_male     Ratio
+1         537  60.26936
+0         354  39.73064
+##############################
+   deck     Ratio
+C    59  6.621773
+B    47  5.274972
+D    33  3.703704
+E    32  3.591470
+A    15  1.683502
+F    13  1.459035
+G     4  0.448934
+##############################
+             embark_town      Ratio
+Southampton          644  72.278339
+Cherbourg            168  18.855219
+Queenstown            77   8.641975
+##############################
+     alive      Ratio
+no     549  61.616162
+yes    342  38.383838
+##############################
+   alone     Ratio
+1    537  60.26936
+0    354  39.73064
+##############################
+"""
+

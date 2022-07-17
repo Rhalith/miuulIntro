@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", 500)
 df = sns.load_dataset("titanic")
@@ -94,6 +95,7 @@ alone            0
 dtype: int64
 """
 
+
 def CheckDataFrame(dataFrame, head=5):
     print("###### Shape ######")
     print(dataFrame.shape)
@@ -107,6 +109,7 @@ def CheckDataFrame(dataFrame, head=5):
     print(dataFrame.isnull().sum())
     print("###### Quantities ######")
     print(dataFrame.describe([0, 0.05, 0.50, 0.95, 0.99, 1]).T)
+
 
 CheckDataFrame(df)
 """
@@ -262,9 +265,12 @@ cat_cols = cat_cols + num_but_cat
  'alone']
 """
 
+
 def CatSummary(dataFrame, colName):
     print(pd.DataFrame({colName: dataFrame[colName].value_counts(),
-                        "Ratio": 100*dataFrame[colName].value_counts() / len(dataFrame)}))
+                        "Ratio": 100 * dataFrame[colName].value_counts() / len(dataFrame)}))
+
+
 CatSummary(df, "survived")
 """
    survived      Ratio
@@ -313,14 +319,16 @@ True     537  60.26936
 False    354  39.73064
 """
 
-def CatSummary(dataFrame, colName, plot = False):
+
+def CatSummary(dataFrame, colName, plot=False):
     print(pd.DataFrame({colName: dataFrame[colName].value_counts(),
-                        "Ratio": 100*dataFrame[colName].value_counts() / len(dataFrame)}))
+                        "Ratio": 100 * dataFrame[colName].value_counts() / len(dataFrame)}))
     print("##############################")
 
     if plot:
         sns.countplot(x=dataFrame[colName], data=dataFrame)
-        plt.show(block = True)
+        plt.show(block=True)
+
 
 CatSummary(df, "sex", True)
 
@@ -378,11 +386,11 @@ yes    342  38.383838
 ##############################
 """
 
-
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", 500)
 df = sns.load_dataset("titanic")
@@ -415,11 +423,14 @@ num_cols
 ['age', 'fare']
 """
 
-def NumSummary(dataFrame, numericalCol):
+
+def num_summary(dataFrame, numericalCol):
     quantiles = [0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.99]
     print(dataFrame[numericalCol].describe(quantiles).T)
+
+
 for col in num_cols:
-    NumSummary(df, col)
+    num_summary(df, col)
 """
 count    714.000000
 mean      29.699118
@@ -459,7 +470,8 @@ max      512.329200
 Name: fare, dtype: float64
 """
 
-def NumSummary(dataFrame, numericalCol, plot = False):
+
+def num_summary(dataFrame, numericalCol, plot=False):
     quantiles = [0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.99]
     print(dataFrame[numericalCol].describe(quantiles).T)
 
@@ -467,7 +479,269 @@ def NumSummary(dataFrame, numericalCol, plot = False):
         dataFrame[numericalCol].hist()
         plt.xlabel(numericalCol)
         plt.title(numericalCol)
-        plt.show(block = True)
+        plt.show(block=True)
+
 
 for col in num_cols:
-    NumSummary(df, col, True)
+    num_summary(df, col, True)
+
+
+def grab_col_names(dataFrame, cat_th=10, car_th=20):
+    """
+    Gives names of the categorical, numeric and categorical but cardinal variables in the dataframe.
+    :param dataFrame: DataFrame
+    :param cat_th: int, float
+        max value for numeric but categorical variables
+    :param car_th: int, float
+        max value for categorical but cardinal variables
+    :return:
+        cat_cols: list
+            categorical variables list
+        num_cols: list
+            numerical variables list
+        cat_bur_car: list
+            categorical but cardinal variables list
+    :notes:
+        cat_cols + num_cols + cat_but_car = total variable count
+        num_but_cat is in cat_cols.
+    """
+    cat_cols = [col for col in df.columns if str(df[col].dtypes) in ["category", "object", "bool"]]
+    num_but_cat = [col for col in df.columns if df[col].nunique() < cat_th and df[col].dtypes in ["int", "float"]]
+    cat_but_car = [col for col in df.columns if df[col].nunique() > car_th and str(df[col].dtypes) in ["category", "object"]]
+    cat_cols = cat_cols + num_but_cat
+    cat_cols = [col for col in cat_cols if col not in cat_but_car]
+
+    num_cols = [col for col in df.columns if df[col].dtypes in ["int", "float"]]
+    num_cols = [col for col in num_cols if col not in cat_cols]
+
+    print(f"Observations: {dataFrame.shape[0]}")
+    print(f"Variables: {dataFrame.shape[1]}")
+    print(f"cat_cols: {len(cat_cols)}")
+    print(f"num_cols: {len(num_cols)}")
+    print(f"cat_but_car: {len(cat_but_car)}")
+    print(f"num_but_cat: {len(num_but_cat)}")
+
+    return cat_cols, num_cols, cat_but_car
+
+
+help(grab_col_names)
+"""
+Help on function grab_col_names in module __main__:
+grab_col_names(dataFrame, cat_th=10, car_th=20)
+    Gives names of the categorical, numeric and categorical but cardinal variables in the dataframe.
+    :param dataFrame: DataFrame
+    :param cat_th: int, float
+        max value for numeric but categorical variables
+    :param car_th: int, float
+        max value for categorical but cardinal variables
+    :return:
+        cat_cols: list
+            categorical variables list
+        num_cols: list
+            numerical variables list
+        cat_bur_car: list
+            categorical but cardinal variables list
+    :notes:
+        cat_cols + num_cols + cat_but_car = total variable count
+        num_but_cat is in cat_cols.
+"""
+
+grab_col_names(df)
+"""
+Observations: 891
+Variables: 15
+cat_cols: 9
+num_cols: 2
+cat_but_car: 0
+num_but_cat: 0
+Out[55]: 
+(['sex',
+  'embarked',
+  'class',
+  'who',
+  'adult_male',
+  'deck',
+  'embark_town',
+  'alive',
+  'alone'],
+ ['age', 'fare'],
+ [])
+"""
+
+cat_cols, num_cols, cat_but_car = grab_col_names(df)
+"""
+Observations: 891
+Variables: 15
+cat_cols: 9
+num_cols: 2
+cat_but_car: 0
+num_but_cat: 0
+"""
+def cat_summary(dataFrame, colName, plot=False):
+    print(pd.DataFrame({colName: dataFrame[colName].value_counts(),
+                        "Ratio": 100 * dataFrame[colName].value_counts() / len(dataFrame)}))
+    print("##############################")
+
+    if plot:
+        sns.countplot(x=dataFrame[colName], data=dataFrame)
+        plt.show(block=True)
+
+for col in cat_cols:
+    cat_summary(df, col)
+"""
+        sex      Ratio
+male    577  64.758698
+female  314  35.241302
+##############################
+   embarked      Ratio
+S       644  72.278339
+C       168  18.855219
+Q        77   8.641975
+##############################
+        class      Ratio
+Third     491  55.106622
+First     216  24.242424
+Second    184  20.650954
+##############################
+       who      Ratio
+man    537  60.269360
+woman  271  30.415264
+child   83   9.315376
+##############################
+       adult_male     Ratio
+True          537  60.26936
+False         354  39.73064
+##############################
+   deck     Ratio
+C    59  6.621773
+B    47  5.274972
+D    33  3.703704
+E    32  3.591470
+A    15  1.683502
+F    13  1.459035
+G     4  0.448934
+##############################
+             embark_town      Ratio
+Southampton          644  72.278339
+Cherbourg            168  18.855219
+Queenstown            77   8.641975
+##############################
+     alive      Ratio
+no     549  61.616162
+yes    342  38.383838
+##############################
+       alone     Ratio
+True     537  60.26936
+False    354  39.73064
+##############################
+"""
+
+
+def num_summary(dataFrame, numericalCol, plot=False):
+    quantiles = [0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.99]
+    print(dataFrame[numericalCol].describe(quantiles).T)
+
+    if plot:
+        dataFrame[numericalCol].hist()
+        plt.xlabel(numericalCol)
+        plt.title(numericalCol)
+        plt.show(block=True)
+
+for col in num_cols:
+    num_summary(df, col, True)
+"""
+count    714.000000
+mean      29.699118
+std       14.526497
+min        0.420000
+5%         4.000000
+10%       14.000000
+20%       19.000000
+30%       22.000000
+40%       25.000000
+50%       28.000000
+60%       31.800000
+70%       36.000000
+80%       41.000000
+90%       50.000000
+95%       56.000000
+99%       65.870000
+max       80.000000
+Name: age, dtype: float64
+count    891.000000
+mean      32.204208
+std       49.693429
+min        0.000000
+5%         7.225000
+10%        7.550000
+20%        7.854200
+30%        8.050000
+40%       10.500000
+50%       14.454200
+60%       21.679200
+70%       27.000000
+80%       39.687500
+90%       77.958300
+95%      112.079150
+99%      249.006220
+max      512.329200
+Name: fare, dtype: float64
+"""
+
+df = sns.load_dataset("titanic")
+
+for col in df.columns:
+    if df[col].dtypes == "bool":
+        df[col] = df[col].astype(int)
+
+cat_cols, num_cols, cat_but_car = grab_col_names(df)
+
+for col in cat_cols:
+    cat_summary(df, col, True)
+"""
+        sex      Ratio
+male    577  64.758698
+female  314  35.241302
+##############################
+   embarked      Ratio
+S       644  72.278339
+C       168  18.855219
+Q        77   8.641975
+##############################
+        class      Ratio
+Third     491  55.106622
+First     216  24.242424
+Second    184  20.650954
+##############################
+       who      Ratio
+man    537  60.269360
+woman  271  30.415264
+child   83   9.315376
+##############################
+   deck     Ratio
+C    59  6.621773
+B    47  5.274972
+D    33  3.703704
+E    32  3.591470
+A    15  1.683502
+F    13  1.459035
+G     4  0.448934
+##############################
+             embark_town      Ratio
+Southampton          644  72.278339
+Cherbourg            168  18.855219
+Queenstown            77   8.641975
+##############################
+     alive      Ratio
+no     549  61.616162
+yes    342  38.383838
+##############################
+   adult_male     Ratio
+1         537  60.26936
+0         354  39.73064
+##############################
+   alone     Ratio
+1    537  60.26936
+0    354  39.73064
+##############################
+"""

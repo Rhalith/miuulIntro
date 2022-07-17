@@ -378,3 +378,96 @@ yes    342  38.383838
 ##############################
 """
 
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", 500)
+df = sns.load_dataset("titanic")
+
+df[["age", "fare"]].describe()
+"""
+              age        fare
+count  714.000000  891.000000
+mean    29.699118   32.204208
+std     14.526497   49.693429
+min      0.420000    0.000000
+25%     20.125000    7.910400
+50%     28.000000   14.454200
+75%     38.000000   31.000000
+max     80.000000  512.329200
+"""
+df[["age", "fare"]].describe().T
+"""
+      count       mean        std   min      25%      50%   75%       max
+age   714.0  29.699118  14.526497  0.42  20.1250  28.0000  38.0   80.0000
+fare  891.0  32.204208  49.693429  0.00   7.9104  14.4542  31.0  512.3292
+"""
+
+num_cols = [col for col in df.columns if df[col].dtypes in ["int", "float"]]
+
+num_cols = [col for col in num_cols if col not in cat_cols]
+
+num_cols
+"""
+['age', 'fare']
+"""
+
+def NumSummary(dataFrame, numericalCol):
+    quantiles = [0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.99]
+    print(dataFrame[numericalCol].describe(quantiles).T)
+for col in num_cols:
+    NumSummary(df, col)
+"""
+count    714.000000
+mean      29.699118
+std       14.526497
+min        0.420000
+5%         4.000000
+10%       14.000000
+20%       19.000000
+30%       22.000000
+40%       25.000000
+50%       28.000000
+60%       31.800000
+70%       36.000000
+80%       41.000000
+90%       50.000000
+95%       56.000000
+99%       65.870000
+max       80.000000
+Name: age, dtype: float64
+count    891.000000
+mean      32.204208
+std       49.693429
+min        0.000000
+5%         7.225000
+10%        7.550000
+20%        7.854200
+30%        8.050000
+40%       10.500000
+50%       14.454200
+60%       21.679200
+70%       27.000000
+80%       39.687500
+90%       77.958300
+95%      112.079150
+99%      249.006220
+max      512.329200
+Name: fare, dtype: float64
+"""
+
+def NumSummary(dataFrame, numericalCol, plot = False):
+    quantiles = [0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.99]
+    print(dataFrame[numericalCol].describe(quantiles).T)
+
+    if plot:
+        dataFrame[numericalCol].hist()
+        plt.xlabel(numericalCol)
+        plt.title(numericalCol)
+        plt.show(block = True)
+
+for col in num_cols:
+    NumSummary(df, col, True)

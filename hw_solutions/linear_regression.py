@@ -20,7 +20,8 @@ from sklearn.model_selection import train_test_split, cross_val_score
 
 df = pd.read_csv("datasets/advertising.csv")
 df.shape
-
+df.head()
+df.info()
 X = df[["TV"]]
 y = df[["sales"]]
 
@@ -31,7 +32,7 @@ y = df[["sales"]]
 
 reg_model = LinearRegression().fit(X, y)
 
-# y_hat = b + w*TV
+# y_hat = b + w*TV + e
 
 # sabit (b - bias)
 reg_model.intercept_[0]
@@ -107,9 +108,10 @@ y = df[["sales"]]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
 
+df.shape
+
 y_test.shape
 y_train.shape
-
 
 reg_model = LinearRegression().fit(X_train, y_train)
 
